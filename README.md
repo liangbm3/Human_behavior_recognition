@@ -14,6 +14,7 @@
     conda env create -f environment.yaml #注意CUDA版本为12.1
     ```
 2. 在`./Model_inference/Mix_GCN/model/Temporal_shift`目录下，运行如下命令来安装cuda扩展
+
     ```bash
     chmod +x run.sh
     ./run.sh 

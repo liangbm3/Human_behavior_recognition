@@ -96,7 +96,7 @@ def get_parser():
     parser.add_argument(
         '--save-epoch',
         type=int,
-        default=30,
+        default=20,
         help='the start epoch to save model (#iteration)')
     parser.add_argument(
         '--eval-interval',
