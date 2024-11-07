@@ -1,53 +1,68 @@
-## 1. 环境配置
+# 基于无人机的人体行为识别
+
+## 1. 项目介绍
+这个仓库是2024年第六届全球校园人工智能算法精英大赛——算法挑战赛的全国总决赛的基于无人机的人体行为识别赛题的实现仓库。
+
+参赛队伍：我不是吴恩达  
+队员：闫雨昊、梁倍铭
+
+我们的工作主要基于论文：[HDBN: A Novel Hybrid Dual-branch Network for Robust Skeleton-based Action Recognition](https://ieeexplore.ieee.org/document/10645450)和他们的官方实现仓库：[https://github.com/liujf69/ICMEW2024-Track10](https://github.com/liujf69/ICMEW2024-Track10)
+
+## 2. 环境配置
 1. 创建conda环境，在项目根目录下运行命令
     ```bash
     conda env create -f environment.yaml #注意CUDA版本为12.1
     ```
-2. 在`./Model_inference/Mix_GCN/model/Temporal_shift`目录下，运行命令
+2. 在`./Model_inference/Mix_GCN/model/Temporal_shift`目录下，运行如下命令来安装cuda扩展
     ```bash
     chmod +x run.sh
     ./run.sh 
     ```
 
-## 2. 数据预处理
+## 3. 数据预处理
+先从官网或如下百度网盘链接获取数据集：  
+通过网盘分享的文件：data.zip  
+链接: https://pan.baidu.com/s/1JbiRriqTbhFTRFc2-39w_Q?pwd=3ubf 提取码: 3ubf  
 
-1. 生成一个全为0的numpy数组作为测试集B的label，进入`./Process_data/`路径下，执行命令
-    ```bash
-    python gen_labelB.py
-    ```
-1. 把比赛官方给出的数据集和测试集和刚刚生成的label都放在`./Process_data/data`文件夹下，共六个文件分别为
+将数据集解压到`./Process_data/`路径下，data目录如下：
++ test_joint.npy
++ train_joint.npy
++ train_label.npy
++ val_joint.npy
++ val_label.npy
 
-    - `test_A_joint.npy`
-    - `test_A_label_A.npy`
-    - `train_joint.npy`
-    - `train_label.npy`
-    - `test_B_joint.npy`
-    - `test_B_label.npy`
-2. 生成其他模态数据
+`train`为训练集，`val`为验证集，`test`为测试集。训练集用来训练模型，验证集用来检验模型训练效果，测试集用来预测未知的骨骼点序列，并生成置信度文件用来竞赛打分。为了方便生成置信度文件，我们需要生成一个和测试集等长的全零label，在`./Process_data`目录下运行如下命令即可：
+```bash
+python gen_label.py
+```
 
-    在`./Process_data/`路径下，运行命令
+然后进行以下数据预处理，来生成骨骼点的其他模态数据，在`./Process_data/`路径，按顺序运行以下命令
+
+1. 处理出bone模态数据
     ```bash
     python gen_modal.py --modal bone --use_mp True
-    python gen_modal.py --modal jmb --use_mp True
+    ```
+2. 处理出motion模态数据
+    ```bash
     python gen_modal.py --modal motion
     ```
-    执行完命令后，data文件夹下的文件如图
-    ![数据准备](./img/数据准备.png)
-3. 提取二维数据
-
-    我们提取C通道的X以及Z，同时生成训练以及在b测试集验证时的`.npz`文件，在`./Process_data/`路径下，运行命令
+3. 处理得到合并模态数据
     ```bash
-    python extract_2dpose.py
+    python gen_modal.py --modal jmb --use_mp True
     ```
-5. 提取三维数据
 
-    我们使用`joint`、`bone`、`joint_motion`和`bone_motion`进行训练和测试，在`./Process_data/`路径下，运行命令
-    ```bash
-    python estimate_3dpose.py --config ./configs/3d/joint3d.yaml
-    python estimate_3dpose.py --config ./configs/3d/bone3d.yaml
-    python estimate_3dpose.py --config ./configs/3d/jointmotion3d.yaml
-    python estimate_3dpose.py --config ./configs/3d/bonemotion3d.yaml
-    ```
+接下来，需要提取二维数据，以输入到2D骨架识别网络进行训练和测试，我们提取C通道的X和Z两个通道，同时生成训练以及在测试集评估时的`.npz`文件，在`./Process_data/`路径下，运行命令
+```bash
+python extract_2dpose.py
+```
+
+我们使用`joint`、`bone`、`joint_motion`和`bone_motion`进行训练和测试，在`./Process_data/`路径下，运行命令
+```bash
+python estimate_3dpose.py --config ./configs/3d/joint3d.yaml
+python estimate_3dpose.py --config ./configs/3d/bone3d.yaml
+python estimate_3dpose.py --config ./configs/3d/jointmotion3d.yaml
+python estimate_3dpose.py --config ./configs/3d/bonemotion3d.yaml
+```
 
 ## 3.训练
 
