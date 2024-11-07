@@ -1,0 +1,59 @@
+# command line: main.py --config /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_GCN/config/msg3d_bone.yaml --phase test --save-score True --weights /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_GCN/work_dir/ntu/xview/msg3d_bone/runs-57-14592.pt --device 4
+
+base_lr: 0.3
+batch_size: 64
+config: /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_GCN/config/msg3d_bone.yaml
+device:
+- 4
+eval_interval: 5
+feeder: dataset.feeder.Feeder
+ignore_weights: []
+log_interval: 100
+model: model.msg3d.Model
+model_args:
+  graph: graph.Simcc.AdjMatrixGraph
+  num_class: 155
+  num_g3d_scales: 6
+  num_gcn_scales: 13
+  num_person: 2
+  num_point: 17
+model_saved_name: ''
+nesterov: true
+num_epoch: 65
+num_worker: 32
+optimizer: SGD
+phase: test
+print_log: true
+save_epoch: 30
+save_interval: 1
+save_score: true
+seed: 1
+show_topk:
+- 1
+- 5
+start_epoch: 0
+step:
+- 35
+- 50
+test_batch_size: 64
+test_feeder_args:
+  bone: true
+  data_path: /data2/songxinshuai/ICMEW2024-Track10/Process_data/save_3d_pose/bone3d.npz
+  data_split: test
+  p_interval:
+  - 0.95
+  vel: false
+  window_size: 64
+train_feeder_args:
+  bone: true
+  data_path: /data2/songxinshuai/ICMEW2024-Track10/Process_data/save_3d_pose/bone3d.npz
+  data_split: train
+  p_interval:
+  - 0.5
+  - 1
+  vel: false
+  window_size: 64
+warm_up_epoch: 0
+weight_decay: 0.0005
+weights: /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_GCN/work_dir/ntu/xview/msg3d_bone/runs-57-14592.pt
+work_dir: ./work_dir/ntu/xview/msg3d_bone

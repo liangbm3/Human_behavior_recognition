@@ -1,0 +1,7 @@
+x_train_path: "./data/train_joint_motion.npy"
+y_train_path: "./data/train_label.npy"
+x_valid_path: "./data/val_joint_motion.npy"
+y_valid_path: "./data/val_label.npy"
+x_test_path: "./data/test_joint_motion.npy"
+y_test_path: "./data/test_label.npy"
+save_name: "jointmotion3d"

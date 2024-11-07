@@ -1,3 +1,14 @@
 
 *.npy
 *.npz
+*.pyc
+*.pkl
+*.pt
+*.csv
+*.zip
+*/.pth
+output/
+__pycache__/
+venv/
+env/
+**/build/

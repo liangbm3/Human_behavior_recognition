@@ -1,0 +1,7 @@
+x_train_path: "./data/train_bone.npy"
+y_train_path: "./data/train_label.npy"
+x_valid_path: "./data/val_bone.npy"
+y_valid_path: "./data/val_label.npy"
+x_test_path: "./data/test_bone.npy"
+y_test_path: "./data/test_label.npy"
+save_name: "bone3d"
