@@ -91,6 +91,7 @@ python main.py --config ./config/train/tdgcn_J_2d.yaml --phase train --save-scor
 python main.py --config ./config/train/tdgcn_J_3d.yaml --phase train --save-score True --device 0
 python main.py --config ./config/train/tegcn_B_3d.yaml --phase train --save-score True --device 0
 python main.py --config ./config/train/tegcn_J_3d.yaml --phase train --save-score True --device 0
+python main.py --config ./config/train/mstgcn_multimodal.yaml --phase train --save-score True --device 0
 ```
 或直接运行脚本（不建议，因为计算量太大）
 ```bash

@@ -1,4 +1,4 @@
-work_dir: ./output/tdgcn_J_3d_new
+work_dir: ./output/tdgcn_J_3d
 
 # feeder
 feeder: dataset.feeder_xyz.Feeder
