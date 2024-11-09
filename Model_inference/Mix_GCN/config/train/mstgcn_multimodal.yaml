@@ -1,9 +1,9 @@
-work_dir: ./output/mstgcn_MIXED_model_joint
+work_dir: ./output/mstgcn
 
 # feeder
 feeder: dataset.feeder_xyz.Feeder
 train_feeder_args: 
-  data_path: ../../Process_data/save_3d_pose/joint3d.npz
+  data_path: ../../Process_data/save_3d_pose/combined.npz
   data_split: train
   p_interval: [0.5, 1]
   window_size: 64
@@ -13,7 +13,7 @@ train_feeder_args:
 # /data2/songxinshuai/ICMEW2024-Track10/Process_data/combined_test.npz
 
 test_feeder_args:
-  data_path: ../../Process_data/save_3d_pose/joint3d.npz
+  data_path: ../../Process_data/save_3d_pose/combined.npz
   data_split: test
   p_interval: [0.95]
   window_size: 64
@@ -21,7 +21,7 @@ test_feeder_args:
   vel: False
 
 # model
-model: model.mstgcn_multimodal.Model
+model: model.mstgcn_1.Model
 model_args:
   num_class: 155
   num_point: 17
@@ -41,5 +41,5 @@ warm_up_epoch: 5
 device: [1]
 batch_size: 32
 test_batch_size: 64
-num_epoch: 65
+num_epoch: 50
 nesterov: True
