@@ -6,7 +6,7 @@
 参赛队伍：我不是吴恩达  
 队员：闫雨昊、梁倍铭
 
-我们的工作主要基于论文：[HDBN: A Novel Hybrid Dual-branch Network for Robust Skeleton-based Action Recognition](https://ieeexplore.ieee.org/document/10645450)和他们的官方实现仓库：[https://github.com/liujf69/ICMEW2024-Track10](https://github.com/liujf69/ICMEW2024-Track10)
+具体介绍参见[算法说明书](./algorithm_description.md)
 
 ## 2. 环境配置
 1. 创建conda环境，在项目根目录下运行命令
