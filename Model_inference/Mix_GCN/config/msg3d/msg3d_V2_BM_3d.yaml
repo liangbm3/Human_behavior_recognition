@@ -1,0 +1,46 @@
+
+work_dir: ./output/msg3d_BM_3d
+
+# feeder
+feeder: dataset.feeder.Feeder
+train_feeder_args: 
+  data_path: ../../Process_data/save_3d_pose/bonemotion3d.npz
+  data_split: train
+  p_interval: [0.5, 1]
+  window_size: 64
+  bone: True
+  vel: False
+
+
+# ../../Process_data/save_3d_pose/bonemotion3d_test.npz
+
+test_feeder_args:
+  data_path: ../../Process_data/save_3d_pose/bonemotion3d.npz
+  data_split: test
+  p_interval: [0.95]
+  window_size: 64
+  bone: True
+  vel: False
+
+# model
+model: model.msg3d.Model
+model_args:
+  num_class: 155
+  num_point: 17
+  num_person: 2
+  num_gcn_scales: 13    # `num_scales` == `K + 1` in the paper
+  num_g3d_scales: 6
+  graph: graph.Simcc.AdjMatrixGraph
+
+# optim
+weight_decay: 0.0005
+base_lr: 0.3
+step: [35, 50]
+
+# training
+device: [0]
+batch_size: 64
+test_batch_size: 64
+num_epoch: 65
+nesterov: True
+

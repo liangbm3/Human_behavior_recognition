@@ -563,7 +563,7 @@ class Model(nn.Module):
         if 1:
             attention = True
             adaptive = True
-            self.l1 = TCN_GCN_unit(3, 32, A, residual=False, adaptive=adaptive, attention=attention)
+            self.l1 = TCN_GCN_unit(in_channels, 32, A, residual=False, adaptive=adaptive, attention=attention)
             self.l2 = TCN_GCN_unit(32, 32, A, adaptive=adaptive, attention=attention)
             self.l3 = TCN_GCN_unit(32, 32, A, adaptive=adaptive, attention=attention)
             self.l4 = TCN_GCN_unit(32, 32, A, adaptive=adaptive, attention=attention)

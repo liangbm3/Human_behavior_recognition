@@ -39,22 +39,13 @@ class Feeder(Dataset):
         label = self.label[idx]
         if isinstance(data_numpy,np.ndarray):
             data_numpy = torch.from_numpy(data_numpy)
-        # data_numpy = data_numpy.permute(3, 1, 2, 0) # C,T,V,M
         data_numpy = np.array(data_numpy)
         valid_frame_num = np.sum(data_numpy.sum(0).sum(-1).sum(-1) != 0)
         if(valid_frame_num == 0): 
-            return np.zeros((3, 64, 17, 2)), label, idx
+            return np.zeros((12, 64, 17, 2)), label, idx
         # reshape Tx(MVC) to CTVM
         data_numpy = tools.valid_crop_resize(data_numpy, valid_frame_num, self.p_interval, self.window_size)
-        if self.bone:
-            bone_data_numpy = np.zeros_like(data_numpy)
-            for v1, v2 in coco_pairs:
-                bone_data_numpy[:, :, v1 - 1] = data_numpy[:, :, v1 - 1] - data_numpy[:, :, v2 - 1]
-            data_numpy = bone_data_numpy
-        if self.vel:
-            data_numpy[:, :-1] = data_numpy[:, 1:] - data_numpy[:, :-1]
-            data_numpy[:, -1] = 0
-
+        
         data_numpy = data_numpy - np.tile(data_numpy[:, :, 0:1, :], (1, 1, 17, 1)) # all_joint - 0_joint
         
         return data_numpy, label, idx # C T V M

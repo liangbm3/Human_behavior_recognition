@@ -25,7 +25,7 @@ import yaml
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
-from torchlight.torchlight import DictAction
+from torchlight import DictAction
 
 
 import resource
@@ -59,7 +59,7 @@ def get_parser():
         '--work-dir',
         default='./work_dir/temp',
         help='the work folder for storing results')
-    parser.add_argument('--result-path', default='./', help='the directory to save result npy files')  # 新增的参数
+
     parser.add_argument('-model_saved_name', default='')
     parser.add_argument(
         '--config',
@@ -406,7 +406,7 @@ class Processor():
             '\tMean training loss: {:.4f}.  Mean training acc: {:.2f}%.'.format(np.mean(loss_value), np.mean(acc_value)*100))
         self.print_log('\tTime consumption: [Data]{dataloader}, [Network]{model}'.format(**proportion))
 
-        if save_model :
+        if True :
             state_dict = self.model.state_dict()
             weights = OrderedDict([[k.split('module.')[-1], v.cpu()] for k, v in state_dict.items()])
 
@@ -419,102 +419,99 @@ class Processor():
             f_r = open(result_file, 'w')
         self.model.eval()
         self.print_log('Eval epoch: {}'.format(epoch + 1))
+        # for ln in loader_name:
+        #     loss_value = []
+        #     score_frag = []
+        #     label_list = []
+        #     pred_list = []
+        #     step = 0
+        #     process = tqdm(self.data_loader[ln], ncols=40)
+        #     for batch_idx, (data, label, index) in enumerate(process):
+        #         label_list.append(label)
+        #         with torch.no_grad():
+        #             data = data.float().cuda(self.output_device)
+        #             label = label.long().cuda(self.output_device)
+        #             output = self.model(data)
+        #             loss = self.loss(output, label)
+        #             score_frag.append(output.data.cpu().numpy())
+        #             loss_value.append(loss.data.item())
+
+        #             _, predict_label = torch.max(output.data, 1)
+        #             pred_list.append(predict_label.data.cpu().numpy())
+        #             step += 1
+
+        #         if wrong_file is not None or result_file is not None:
+        #             predict = list(predict_label.cpu().numpy())
+        #             true = list(label.data.cpu().numpy())
+        #             for i, x in enumerate(predict):
+        #                 if result_file is not None:
+        #                     f_r.write(str(x) + ',' + str(true[i]) + '\n')
+        #                 if x != true[i] and wrong_file is not None:
+        #                     f_w.write(str(index[i]) + ',' + str(x) + ',' + str(true[i]) + '\n')
+        #     score = np.concatenate(score_frag)
+        #     loss = np.mean(loss_value)
+        #     if 'ucla' in self.arg.feeder:
+        #         self.data_loader[ln].dataset.sample_name = np.arange(len(score))
+        #     accuracy = self.data_loader[ln].dataset.top_k(score, 1)
+        #     if accuracy > self.best_acc:
+        #         self.best_acc = accuracy
+        #         self.best_acc_epoch = epoch + 1
+
+        #     print('Accuracy: ', accuracy, ' model: ', self.arg.model_saved_name)
+        #     if self.arg.phase == 'train':
+        #         self.val_writer.add_scalar('loss', loss, self.global_step)
+        #         self.val_writer.add_scalar('acc', accuracy, self.global_step)
+
+        #     score_dict = dict(
+        #         zip(self.data_loader[ln].dataset.sample_name, score))
+        #     self.print_log('\tMean {} loss of {} batches: {}.'.format(
+        #         ln, len(self.data_loader[ln]), np.mean(loss_value)))
+        #     for k in self.arg.show_topk:
+        #         self.print_log('\tTop{}: {:.2f}%'.format(
+        #             k, 100 * self.data_loader[ln].dataset.top_k(score, k)))
+
+        #     with open('{}/epoch{}_{}_score.pkl'.format(
+        #             self.arg.work_dir, epoch + 1, ln), 'wb') as f:
+        #         pickle.dump(score_dict, f)
+
+        #     # acc for each class:
+        #     label_list = np.concatenate(label_list)
+        #     pred_list = np.concatenate(pred_list)
+        #     confusion = confusion_matrix(label_list, pred_list)
+        #     list_diag = np.diag(confusion)
+        #     list_raw_sum = np.sum(confusion, axis=1)
+        #     each_acc = list_diag / list_raw_sum
+        #     if epoch>65:
+        #         with open('{}/epoch{}_{}_each_class_acc.csv'.format(self.arg.work_dir, epoch + 1, ln), 'w') as f:
+        #             writer = csv.writer(f)
+        #             writer.writerow(each_acc)
+        #             writer.writerows(confusion)
+        
+        lst = []
         for ln in loader_name:
-            loss_value = []
-            score_frag = []
-            label_list = []
-            pred_list = []
-            step = 0
             process = tqdm(self.data_loader[ln], ncols=40)
             for batch_idx, (data, label, index) in enumerate(process):
-                label_list.append(label)
                 with torch.no_grad():
                     data = data.float().cuda(self.output_device)
                     label = label.long().cuda(self.output_device)
                     output = self.model(data)
-                    loss = self.loss(output, label)
-                    score_frag.append(output.data.cpu().numpy())
-                    loss_value.append(loss.data.item())
+                    for i in range(len(output)):
+                        output_cpu = output[i].cpu().numpy() 
+                        lst.append(output_cpu)
 
-                    _, predict_label = torch.max(output.data, 1)
-                    pred_list.append(predict_label.data.cpu().numpy())
-                    step += 1
+        array_data = np.array(lst)
 
-                if wrong_file is not None or result_file is not None:
-                    predict = list(predict_label.cpu().numpy())
-                    true = list(label.data.cpu().numpy())
-                    for i, x in enumerate(predict):
-                        if result_file is not None:
-                            f_r.write(str(x) + ',' + str(true[i]) + '\n')
-                        if x != true[i] and wrong_file is not None:
-                            f_w.write(str(index[i]) + ',' + str(x) + ',' + str(true[i]) + '\n')
-            score = np.concatenate(score_frag)
-            loss = np.mean(loss_value)
-            if 'ucla' in self.arg.feeder:
-                self.data_loader[ln].dataset.sample_name = np.arange(len(score))
-            accuracy = self.data_loader[ln].dataset.top_k(score, 1)
-            if accuracy > self.best_acc:
-                self.best_acc = accuracy
-                self.best_acc_epoch = epoch + 1
+        print(array_data.shape)
 
-            print('Accuracy: ', accuracy, ' model: ', self.arg.model_saved_name)
-            if self.arg.phase == 'train':
-                self.val_writer.add_scalar('loss', loss, self.global_step)
-                self.val_writer.add_scalar('acc', accuracy, self.global_step)
-
-            score_dict = dict(
-                zip(self.data_loader[ln].dataset.sample_name, score))
-            self.print_log('\tMean {} loss of {} batches: {}.'.format(
-                ln, len(self.data_loader[ln]), np.mean(loss_value)))
-            for k in self.arg.show_topk:
-                self.print_log('\tTop{}: {:.2f}%'.format(
-                    k, 100 * self.data_loader[ln].dataset.top_k(score, k)))
-
-            with open('{}/epoch{}_{}_score.pkl'.format(
-                    self.arg.work_dir, epoch + 1, ln), 'wb') as f:
-                pickle.dump(score_dict, f)
-
-            # acc for each class:
-            label_list = np.concatenate(label_list)
-            pred_list = np.concatenate(pred_list)
-            confusion = confusion_matrix(label_list, pred_list)
-            list_diag = np.diag(confusion)
-            list_raw_sum = np.sum(confusion, axis=1)
-            each_acc = list_diag / list_raw_sum
-            if epoch>65:
-                with open('{}/epoch{}_{}_each_class_acc.csv'.format(self.arg.work_dir, epoch + 1, ln), 'w') as f:
-                    writer = csv.writer(f)
-                    writer.writerow(each_acc)
-                    writer.writerows(confusion)
-        if self.arg.phase=="test":
-            lst = []
-            for ln in loader_name:
-                process = tqdm(self.data_loader[ln], ncols=40)
-                for batch_idx, (data, label, index) in enumerate(process):
-                    with torch.no_grad():
-                        data = data.float().cuda(self.output_device)
-                        label = label.long().cuda(self.output_device)
-                        output = self.model(data)
-                        for i in range(len(output)):
-                            output_cpu = output[i].cpu().numpy() 
-                            lst.append(output_cpu)
-
-            array_data = np.array(lst)
-
-            print(array_data.shape)
-
-            if array_data.shape == (4599, 155):
-                np.save(self.arg.result_path, array_data)
-            else:
-                print(f"{array_data.shape}")
+        if array_data.shape == (4307, 155):
+            np.save('skeformer_K2_jointmotion2d.npy', array_data)
+        else:
+            print(f"{array_data.shape}")
 
         
-# python main.py --config /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_Former/config/mixformer_V2_B.yaml --phase test --save-score True --weights /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_Former/output/skmixf_V2_k2_B3d/runs-54-13824.pt --device 1
+# python main.py --config /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_Former/config/mixformer_V2_k2_BM2d.yaml --phase train --save-score True --weights /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_Former/output/skmixf_V2_BM_2d/runs-47-12267.pt --device 2
+# python main.py --config /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_Former/config/mixformer_V2_k2_JM2d.yaml --phase test --save-score True --weights /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_Former/output/skmixf_V2_k2_JM2d/runs-53-13833.pt --device 3
 
-# python main.py --config /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_Former/config/mixformer_V2_k2_B3d.yaml --phase test --save-score True --weights /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_Former/output/skmixf_V2_k2_B3d/runs-54-13824.pt --device 1
-
-
-# python main.py --config /data2/songxinshuai/ICMEW2024-Track10/Model_inference/Mix_Former/config/mixformer_V2_JM.yaml --phase train --save-score True --device 0
 
 
     def start(self):
