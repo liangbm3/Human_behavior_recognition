@@ -129,27 +129,19 @@ python main.py --config ./config/mixformer_K2/mixformer_V2_k2_JM3d.yaml --phase 
 
 ## 4.测试
 
-进入目录`./Model_inference/Mix_GCN/`，在该目录下运行命令
+进入目录`./Model_inference/Mix_GCN/`，使用如下类似的命令
 ```bash
-python main.py --config ./config/aagcn/aagcn_V2_B_3d.yaml --phase test --save-score True --weights ./output/aagcn_B_3d/runs-38-9918.pt --device 0 --result-path ../result/aagcn_B_3d_result.npy
+python main.py --config ./config/aagcn/aagcn_V2_B_3d.yaml --phase test --save-score True --weights ./output/aagcn_B_3d/runs-38-9918.pt --device 0 --result-path ../../result/aagcn/aagcn_b3d.npy
 
 ```
 
-进入目录`./Model_inference/Mix_Former/`，在该目录下运行命令
+进入目录`./Model_inference/Mix_Former/`，使用如下类似的命令
 ```bash
-python main.py --config ./config/test/mixformer_B.yaml --phase test --save-score True --weights ./output/skmixf_B_3d/runs-55-14080.pt --device 0 --result-path ../result/mixformer_B_result.npy
-python main.py --config ./config/test/mixformer_BM.yaml --phase test --save-score True --weights ./output/skmixf_BM_3d/runs-53-13568.pt --device 0 --result-path ../result/mixformer_BM_result.npy
-python main.py --config ./config/test/mixformer_J.yaml --phase test --save-score True --weights ./output/skmixf_J_3d/runs-56-14336.pt --device 0 --result-path ../result/mixformer_J_result.npy
-python main.py --config ./config/test/mixformer_JM.yaml --phase test --save-score True --weights ./output/skmixf_JM_3d/runs-52-13312.pt --device 0 --result-path ../result/mixformer_JM_result.npy
-python main.py --config ./config/test/mixformer_k2_B3d.yaml --phase test --save-score True --weights ./output/skmixf_k2_B3d/runs-54-13824.pt --device 0 --result-path ../result/mixformer_k2_B3d.npy
-python main.py --config ./config/test/mixformer_k2_J3d.yaml --phase test --save-score True --weights ./output/skmixf_k2_J3d/runs-53-13568.pt --device 0 --result-path ../result/mixformer_k2_J3d.npy
+python main.py --config ./config/mixformer/mixformer_V2_B2d.yaml --phase test --save-score True --weights ./output/skmixf_V2_B_2d/runs-53-13833.pt --device 0 --result-path ../../result/skeformer/skeformer_b2d.npy
+
 ```
-或直接运行脚本
-```bash
-chmod +x ./script_test.sh
-./script_test.sh
-```
-我们的对B测试集的推理结果备份在`./ensemble_npy`
+
+我们的对测试集的推理结果备份在`./output`
 
 在`./`目录下运行如下命令
 ```bash
